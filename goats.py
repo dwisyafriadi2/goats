@@ -53,6 +53,7 @@ def post_action(mission_id, token):
     # Sending the POST request to the API after the action
     response = requests.post(post_url, headers=headers)
     if response.status_code == 201:
+        print("[Join Group](https://t.me/dasarpemulung)")
         print(f"Successfully posted action for mission {mission_id}")
         return response.json()  # Return the result of the action
     else:
@@ -68,10 +69,9 @@ def handle_missions(token):
             for mission in missions:
                 # Simulate clicking the action link
                 click_on_link(mission)
-                
                 # Post to the action API
                 post_result = post_action(mission['_id'], token)
-                
+                print("[Join Group](https://t.me/dasarpemulung)")
                 if post_result:
                     print(f"Post action result for mission {mission['_id']}: {post_result}")
 
