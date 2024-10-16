@@ -1,0 +1,58 @@
+import requests
+
+# Function to read tokens from file
+def read_tokens(file_path):
+    with open(file_path, 'r') as file:
+        tokens = file.read().splitlines()
+    return tokens
+
+# Function to fetch tasks using each token
+def fetch_tasks(tokens):
+    url = "https://api-mission.goatsbot.xyz/missions/user"
+    
+    headers_template = {
+        "accept": "application/json, text/plain, */*",
+        # "accept-encoding": "gzip, deflate, br, zstd",  # Removed this line to request uncompressed response
+        "accept-language": "en-US,en;q=0.9",
+        "origin": "https://dev.goatsbot.xyz",
+        "referer": "https://dev.goatsbot.xyz/",
+        "sec-ch-ua": '"Microsoft Edge";v="129", "Not=A?Brand";v="8", "Chromium";v="129", "Microsoft Edge WebView2";v="129"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0"
+    }
+
+    for token in tokens:
+        headers = headers_template.copy()
+        headers["authorization"] = f"Bearer {token}"
+        
+        try:
+            response = requests.get(url, headers=headers)
+            print(f"Status Code for token {token[:10]}...: {response.status_code}")
+
+            # Check if the response is JSON and has content
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    print(f"Tasks for token {token[:10]}...: {data}")
+                except ValueError:
+                    # Print raw response content for debugging
+                    print(f"Non-JSON response for token {token[:10]}...: {response.text}")
+            else:
+                print(f"Failed to fetch tasks for token {token[:10]}..., Status Code: {response.status_code}")
+        
+        except Exception as e:
+            print(f"Error fetching tasks for token {token[:10]}...: {str(e)}")
+
+if __name__ == "__main__":
+    # Path to the file containing the tokens
+    token_file = "token.txt"
+    
+    # Read tokens from file
+    tokens = read_tokens(token_file)
+    
+    # Fetch tasks for each token
+    fetch_tasks(tokens)
